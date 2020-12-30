@@ -49,16 +49,24 @@ class Board:
         textRect.center = (BOARD_SIZE[0] // 2, 200)
         explanationStr1 = "The dialogue boxes gives you control of where to set the spawn/destination points,"
         explanationStr2 = "they also allow you to modify the parameters for the pathfinding algorithm."
-
+        explanationStr3 = "The Red square represents the starting locaiton, the green square represents the destination."
+        explanationStr4 = "The yellow squares represent the shortest path to and from, the blue squares represent the different squares that were explored."
 
         explainText = bodyFont.render(explanationStr1,True,GREEN)
         explainText2 = bodyFont.render(explanationStr2,True,GREEN)
+        explainText3 = bodyFont.render(explanationStr3,True,GREEN)
+        explainText4 = bodyFont.render(explanationStr4,True,GREEN)
 
         explainRect = explainText.get_rect()
         explainRect2 = explainText2.get_rect()
+        explainRect3 = explainText3.get_rect()
+        explainRect4 = explainText4.get_rect()
+
 
         explainRect.center = (BOARD_SIZE[0] // 2, 350)
         explainRect2.center = (BOARD_SIZE[0] // 2, 375)
+        explainRect3.center = (BOARD_SIZE[0] // 2, 400)
+        explainRect4.center = (BOARD_SIZE[0] // 2, 425)
 
 
         startText = titleFont.render("Start Pathfinding",True,YELLOW)
@@ -69,6 +77,8 @@ class Board:
         self.board.blit(text,textRect)
         self.board.blit(explainText,explainRect)
         self.board.blit(explainText2,explainRect2)
+        self.board.blit(explainText3,explainRect3)
+        self.board.blit(explainText4,explainRect4)
         self.board.blit(startText,startRect)
     def createControls(self):
         controlFont = pg.font.Font("freesansbold.ttf", 20)
@@ -106,27 +116,18 @@ class Board:
 
         pg.draw.rect(self.board,color,smallRect)
     
-
-    def drawPath(self, game,arr):
-        print("DRAWING...")
-        for x in arr[1:len(arr) -1]:
-            self.updateBoard(x,YELLOW)
-            game.time.delay(250)
-            game.display.flip()
-        print("Done")
-
-    def drawPath2(self, game,actualPath,extra):
+    def drawPath(self, game,actualPath,extra):
         print("DRAWING...")
         
         for x in extra[1:len(extra) -1]:
-            print("drawing error")
             self.updateBoard(x.coord,BLUE)
-            game.time.delay(10)
-            game.display.flip()
+            pg.time.delay(10)
+            pg.display.flip()
+            print("still drawing errors")
         print(f"drawing path:")
         # my attempt at doing both in 1
         for y in actualPath[1:len(actualPath) -1]:
             self.updateBoard(y,YELLOW)
-            game.time.delay(250)
-            game.display.flip()
+            pg.time.delay(250)
+            pg.display.flip()
         print("Done")

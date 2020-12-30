@@ -79,11 +79,15 @@ def main():
                     pg.display.flip()
                 
                 elif rect_pressed(myBoard.spawnRect,pos):
+                    # Incase user presses both rectangles before placing on board
                     is_placing_spawn = True
+                    is_placing_dest = False
                     print("Start")
                 
                 elif rect_pressed(myBoard.destRect,pos):
+                    # Incase user presses both rectangles before placing on board
                     is_placing_dest = True
+                    is_placing_spawn = False
                     print("Dest")
 
                 elif rect_pressed(myBoard.visRect,pos):
@@ -104,9 +108,11 @@ def main():
 
 
         clock.tick(60)
+
+#TODO MY OPEN_LIST HAS TOO MANY DUPLICATES NEED TO FIND WAY TO GET RID OF
 def visualize_path(board_mat,start,dest):
     open_list = []
-    closed_list = []
+    closed_list = {}
     start_node = Node(None,start)
     open_list.append(start_node)
     while len(open_list) != 0:
@@ -122,6 +128,8 @@ def visualize_path(board_mat,start,dest):
             iters += 1
         
         cur_node = open_list.pop(minInd)
+        #maybe add cur_node to closed here
+        closed_list[cur_node] = cur_node.f
 
         sucessors = gen_sucessors(board_mat, cur_node)
 
@@ -129,23 +137,33 @@ def visualize_path(board_mat,start,dest):
             is_valid = True
             # Goal is found
             if neighbor.coord == dest:
-                return neighbor, closed_list + open_list
+                combined = []
+                #had to turn the keys into an array like this because it didn't like closed_list.keys() + open_list
+                for node in closed_list.keys():
+                    combined.append(node)
+                print(f"combined: {combined}")
+                return neighbor, combined + open_list
             
             # Using Euclid distance Herustic
             neighbor.h = math.sqrt(((neighbor.coord[0] - dest[0]) ** 2) + ((neighbor.coord[1] - dest[1]) ** 2))
             neighbor.f = neighbor.g + neighbor.h
             
-            # have a dictionary that contains the node as the key and the f as the value
-            for x in closed_list:
-                if x.coord == neighbor.coord:
-                    if x.f <= neighbor.f:
+            for nodes in closed_list:
+                if nodes.coord == neighbor.coord:
+                    if closed_list[nodes] <= neighbor.f:
                         is_valid = False
-                    
-            if is_valid:
-                open_list.append(neighbor)
-        
-        closed_list.append(cur_node)
+            
+            # Checks to see if a better version already exists in the array
+            for nodes in open_list:
+                if nodes.coord == neighbor.coord:
+                    if nodes.f <= neighbor.f:
+                        is_valid = False
 
+            if is_valid:
+                
+                open_list.append(neighbor)
+
+        
 #generates valid neighbors for nodes
 def gen_sucessors(board_mat,node):
     directions = [[0,1],[1,0],[-1,0],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]]

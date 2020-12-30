@@ -13,8 +13,13 @@ class Node:
         #checks to see if has same f value at same coord
         if o == None:
             return False
-        return o.f == self.f and self.coord == o.coord
+        #return o.f == self.f and self.coord == o.coord
+        return self.coord == o.coord
     
+    def __hash__(self):
+        return hash(tuple(self.coord))
+
+
     def __str__(self):
         if self.parent == None:
             return (f"No Parent \ncurrent coord: {self.coord} g: {self.g} h: {self.h} f: {self.f}")
