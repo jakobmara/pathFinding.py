@@ -10,11 +10,10 @@ class Node:
         self.coord = coord
     
     def __eq__(self, o: object) -> bool:
-        #checks to see if has same f value at same coord
+        # Checks to see if has same f value at same coord
         if o == None:
             return False
-        #return o.f == self.f and self.coord == o.coord
-        return self.coord == o.coord
+        return o.f == self.f and self.coord == o.coord
     
     def __hash__(self):
         return hash(tuple(self.coord))

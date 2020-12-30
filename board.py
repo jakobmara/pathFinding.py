@@ -1,4 +1,5 @@
 import pygame as pg
+import time
 BOARD_SIZE = (1024, 1024)
 YELLOW = (255,255,0)
 GRAY = (105,105,105)
@@ -18,10 +19,7 @@ class Board:
         self.spawnRect, self.destRect, self.visRect, self.resetRect = None, None, None, None
         self.board_matrix = [ [0] * self.cols for i in range(self.rows)]
 
-
-    def getElement(self,coord):
-        return self.board_matrix[coord[0]][coord[1]]
-
+    # Creates board part of application
     def createBoard(self):
         self.board.fill(BLACK)
         # resets the matrix incase reset button's been pressed
@@ -37,8 +35,8 @@ class Board:
             pg.draw.line(self.board,WHITE,[x,0],[x,BOARD_SIZE[0]],1)
             x+= 32
         # I should proll update the screen here.... as of now I do it in the driver code
-        print(f"rows: {self.rows}, cols: {self.cols}")
 
+    # Creates opening screen
     def createIntro(self):
         self.board.fill(BLACK)
         titleFont = pg.font.Font('freesansbold.ttf', 32)
@@ -72,7 +70,6 @@ class Board:
         startText = titleFont.render("Start Pathfinding",True,YELLOW)
         startRect = startText.get_rect()
         startRect.center = (BOARD_SIZE[0] // 2, 600)
-        print(f"rectangle: {startRect}")
 
         self.board.blit(text,textRect)
         self.board.blit(explainText,explainRect)
@@ -80,12 +77,13 @@ class Board:
         self.board.blit(explainText3,explainRect3)
         self.board.blit(explainText4,explainRect4)
         self.board.blit(startText,startRect)
+    
+    # Function creates the side pannel of the application
     def createControls(self):
-        controlFont = pg.font.Font("freesansbold.ttf", 20)
+        controlFont = pg.font.Font("freesansbold.ttf", 25)
         spawnText = controlFont.render("Start",True,BLACK,RED)
         self.spawnRect = spawnText.get_rect()
-        self.spawnRect.center = (1124, 150) #1124 should be inbetween board and border
-
+        self.spawnRect.center = (1124, 150) #1124 should be inbetween board and EOS
 
         destText = controlFont.render("Destination",True,BLACK,GREEN)
         self.destRect = destText.get_rect()
@@ -105,8 +103,8 @@ class Board:
         self.board.blit(resetText,self.resetRect)
     
     def updateBoard(self,pos,color):
-        smallRect = (pos[1]*32,pos[0]*32,32,32)
-        print(f"grid location: {pos} rect: {smallRect}")
+        # Adding slight offset allows for the white lines to stay on board
+        smallRect = (pos[1]*32+1,pos[0]*32+1,31,31)
         
         # If an obstacle is placed the matrix is updated to reflect current state
         if color == GRAY:
@@ -116,18 +114,20 @@ class Board:
 
         pg.draw.rect(self.board,color,smallRect)
     
-    def drawPath(self, game,actualPath,extra):
-        print("DRAWING...")
+    def drawPath(self,actualPath,extra):
         
+        # Drawing explored Nodes
         for x in extra[1:len(extra) -1]:
+            # In pygame need to interact with event queue so it doesn't think program's locked up
+            pg.event.pump()
             self.updateBoard(x.coord,BLUE)
             pg.time.delay(10)
             pg.display.flip()
-            print("still drawing errors")
-        print(f"drawing path:")
-        # my attempt at doing both in 1
+        
+        # Drawing path
         for y in actualPath[1:len(actualPath) -1]:
+            pg.event.pump()
             self.updateBoard(y,YELLOW)
-            pg.time.delay(250)
+            pg.time.delay(20)
             pg.display.flip()
-        print("Done")
+        
